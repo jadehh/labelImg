@@ -35,7 +35,15 @@ from src.create_ml_io import CreateMLReader
 from src.create_ml_io import JSON_EXT
 from src.ustr import ustr
 from src.hashableQListWidgetItem import HashableQListWidgetItem
-
+from jade import JadeLogging,CreateSavePath
+import sys
+import os
+import time
+try:
+    tmp_path = CreateSavePath("/tmp/labelImg")
+    JadeLog = JadeLogging(os.path.join(tmp_path,"Log"), Level="DEBUG")
+except:
+    JadeLog = None
 
 __appname__ = 'labelImg'
 
@@ -70,7 +78,7 @@ class MainWindow(QMainWindow, WindowMixin):
         self.settings = Settings()
         self.settings.load()
         settings = self.settings
-
+        sys.excepthook = self.catch_exceptions
         # Load string bundle for i18n
         self.string_bundle = StringBundle.get_bundle()
         print(self.string_bundle.__dict__)
@@ -503,7 +511,16 @@ class MainWindow(QMainWindow, WindowMixin):
         if event.key() == Qt.Key_Control:
             # Draw rectangle if Ctrl is pressed
             self.canvas.set_drawing_shape_to_square(True)
-
+    def catch_exceptions(self, ty, value, traceback_str):
+        """
+        捕获异常，并弹窗显示
+        :param ty: 异常的类型
+        :param value: 异常的对象
+        :param traceback: 异常的traceback
+        """
+        traceback_format = traceback.format_exception(ty, value, traceback_str)
+        traceback_string = "".join(traceback_format)
+        JadeLog.ERROR("程序运行异常,异常原因为:{}".format(traceback_string))
     # Support Functions #
     def set_format(self, save_format):
         if save_format == FORMAT_PASCALVOC:
@@ -1322,6 +1339,13 @@ class MainWindow(QMainWindow, WindowMixin):
                 " 当前所在位置%d,总数%d" % (current_index, len(self.m_img_list)))
             if filename:
                 self.load_file(filename)
+
+    def closeEvent(self, event):
+        JadeLog.DEBUG("程序退出")
+        event.accept()
+        JadeLog.release()
+        time.sleep(0.01)
+        os._exit(1)
 
     def open_next_image(self, _value=False):
         # Proceeding prev image without dialog if having any label
