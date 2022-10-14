@@ -17,8 +17,6 @@ if __name__ == '__main__':
                             default=[])  ## 需要额外打包的路径
         parser.add_argument('--full', type=bool,
                             default=False)  ## 打包成一个完成的包
-        parser.add_argument('--scripts_path', type=str,
-                            default=r"C:\Python3.6.7\Scripts")  ## 打包成一个完成的包
         parser.add_argument('--lib_path', type=str, default="labelImg_lib32")  ## 是否lib包分开打包
 
     else:
@@ -46,11 +44,11 @@ if __name__ == '__main__':
                         default=True)  ## 是否打包成AppImage
 
     parser.add_argument('--is_qt', type=bool, default=False)  ## qt 会将controller view src 都进行编译
-    parser.add_argument('--specify_files',type=list,default=["labelImg_resources.py"]) ## 指定编译的文件
+    parser.add_argument('--specify_files',type=list,default=[]) ## 指定编译的文件
     args = parser.parse_args()
     # writePy(args)
-    #build(args)
-    #copy_build(args, r"G:\SVN\软件\标注工具\标注工具-labelImg\{}".format(args.name + "V" + args.app_version))
+    # build(args)
     # packAPP(args)
+    #copy_build(args, r"G:\SVN\软件\标注工具\标注工具-labelImg\{}".format(args.name + "V" + args.app_version))
     packSetup(args,r"G:\SVN\软件\标注工具\标注工具-labelImg\{}\Windows".format(args.name + "V" + args.app_version),"ff33f6a2-2ce9-11ed-89e6-220db03570cb")
 
